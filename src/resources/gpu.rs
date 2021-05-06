@@ -1,4 +1,6 @@
 
+use std::fmt;
+
 #[derive (Debug)]
 pub struct GPU {
     id: usize,
@@ -6,6 +8,17 @@ pub struct GPU {
     gpu_memory: usize,
     fraction_usage_free: usize,
     fraction_memory_free: usize,
+}
+
+impl fmt::Display for GPU {
+    // This trait requires `fmt` with this exact signature.
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(
+            f,
+            "GPU_{}: usage_free: {}, memory_free: {}",
+            self.id, self.fraction_usage_free, self.fraction_memory_free
+        )
+    }
 }
 
 impl GPU {
@@ -34,6 +47,19 @@ impl GPU {
 
     pub fn get_index(&self) -> usize {
         self.id
+    }
+
+    pub fn get_format_print(&self,
+        usage_free_threshold: usize,
+        memory_free_threshold: usize) -> String {
+
+        format!(
+            "GPU_{}: usage_free: {}, memory_free: {}, available: {}",
+            self.id,
+            self.fraction_usage_free,
+            self.fraction_memory_free,
+            self.is_available(usage_free_threshold, memory_free_threshold)
+        )
     }
 
     pub fn is_available(&self,

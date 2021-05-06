@@ -24,13 +24,22 @@ async fn stat(
     let mut node_pool = NodePool::new(nodes);
 
     node_pool.query_gpus().await;
-    let resources = node_pool.available_gpus(
-        usage_free_threshold, memory_free_threshold
-    ).await;
-
-    for r in resources {
-        println!("{}", r);
+    for n in node_pool.get_nodes() {
+        println!(
+            "{}", n.get_format_print(
+                usage_free_threshold,
+                memory_free_threshold
+            )
+        )
     }
+
+    // let resources = node_pool.available_gpus(
+    //     usage_free_threshold, memory_free_threshold
+    // ).await;
+
+    // for r in resources {
+    //     println!("{}", node_pool.get_node(&r));
+    // }
 
 }
 

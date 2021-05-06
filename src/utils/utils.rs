@@ -15,7 +15,6 @@ async fn _open_session(sernodes: &Vec<SerNode>) -> Vec<Result<Session, openssh::
     for sn in sernodes {
 
         let session_name = sn.get_name();
-        println!("opening : {}", session_name);
 
         let session = openssh::Session::connect(
             session_name,

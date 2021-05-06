@@ -17,6 +17,10 @@ impl GPUPool {
         self.pool.push(gpu)
     }
 
+    pub fn get_gpus(&self) -> &Vec<GPU> {
+        &self.pool
+    }
+
     pub fn parse_value(line: &str) -> usize {
 
         line.split_whitespace().nth(2)

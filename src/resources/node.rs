@@ -1,6 +1,8 @@
 
+use std::fmt;
 use openssh::Session;
 use super::{GPUPool, ResourceIndex, Job};
+
 
 #[derive (Debug)]
 pub struct Node {
@@ -10,6 +12,19 @@ pub struct Node {
     n_gpus: Option<usize>,
     name: String,
     env: Option<String>
+}
+
+impl fmt::Display for Node {
+    // This trait requires `fmt` with this exact signature.
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        let mut output = String::new();
+        output.push_str(&format!("Node Name: {}", self.name));
+        for g in self.gpu_pool.get_gpus() {
+            output.push_str(&format!("\n >> {}", g));
+        }
+
+        write!(f, "{}", output)
+    }
 }
 
 impl Node {
@@ -39,6 +54,23 @@ impl Node {
 
     pub fn get_env(&self) -> &Option<String> {
         &self.env
+    }
+
+    pub fn get_format_print(&self,
+        usage_free_threshold: usize,
+        memory_free_threshold: usize) -> String {
+
+
+        let mut output = String::new();
+        output.push_str(&format!("Node Name: {}", self.name));
+        for g in self.gpu_pool.get_gpus() {
+            let gpu_output = g.get_format_print(usage_free_threshold, memory_free_threshold);
+            output.push_str(
+                &format!("\n >> {}", gpu_output)
+            );
+        }
+
+        output
     }
 
     #[allow (dead_code)]

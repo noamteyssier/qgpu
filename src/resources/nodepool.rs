@@ -17,6 +17,10 @@ impl NodePool {
         &self.nodes[r.get_node_id()]
     }
 
+    pub fn get_nodes(&self) -> &Vec<Node> {
+        &self.nodes
+    }
+
     #[allow (dead_code)]
     pub async fn query_ls(&self) {
         let mut v = Vec::new();
