@@ -40,7 +40,7 @@ impl GPU {
         usage_free_threshold: usize,
         memory_free_threshold: usize) -> bool {
 
-        (self.get_usage_free() >= usage_free_threshold) &
+        (self.get_usage_free() >= usage_free_threshold) &&
             (self.get_memory_free() >= memory_free_threshold)
 
     }

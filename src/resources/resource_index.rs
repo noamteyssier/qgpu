@@ -1,7 +1,7 @@
 
 use std::fmt;
 
-#[derive (Debug)]
+#[derive (Debug, Ord, PartialOrd, PartialEq, Eq)]
 pub struct ResourceIndex {
     node_id: usize,
     gpu_id: usize

@@ -46,7 +46,7 @@ impl NodePool {
 
         let mut v = Vec::new();
 
-        // prepare query available gpus passing free fraction threshold
+        // prepare query available gpus passing free usage and memory threshold
         for n in self.nodes.iter() {
             v.push(n.available_gpus(usage_free_threshold, memory_free_threshold))
         }
@@ -55,10 +55,14 @@ impl NodePool {
         let resources = join_all(v).await;
 
         // return all available resources as vector
-        resources
+        let mut all_resources = resources
             .into_iter()
             .flatten()
-            .collect()
+            .collect::<Vec<ResourceIndex>>();
+
+        all_resources.sort_by_key(|k| k.get_gpu_id());
+
+        all_resources
 
     }
 

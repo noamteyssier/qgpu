@@ -10,8 +10,8 @@ use utils::{open_sessions, read_node_config, read_job_config};
 #[tokio::main]
 async fn main() {
 
-    let usage_free_threshold = 90;
-    let memory_free_threshold = 85;
+    let usage_free_threshold = 99;
+    let memory_free_threshold = 99;
 
     let fn_node_config = "node_pool.json";
     let fn_job_config = "jobs.json";
