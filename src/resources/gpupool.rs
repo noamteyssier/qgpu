@@ -1,5 +1,5 @@
 
-use super::GPU;
+use super::{GPU, ResourceIndex};
 
 #[derive (Debug)]
 pub struct GPUPool {
@@ -15,6 +15,10 @@ impl GPUPool {
 
     pub fn add_gpu(&mut self, gpu: GPU) {
         self.pool.push(gpu)
+    }
+
+    pub fn get_gpu(&self, r: &ResourceIndex) -> &GPU {
+        &self.pool[r.get_gpu_id()]
     }
 
     pub fn get_gpus(&self) -> &Vec<GPU> {

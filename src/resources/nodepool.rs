@@ -17,6 +17,10 @@ impl NodePool {
         &self.nodes[r.get_node_id()]
     }
 
+    pub fn print_resource(&self, r: &ResourceIndex) -> String {
+        self.nodes[r.get_node_id()].print_resource(r)
+    }
+
     pub fn get_nodes(&self) -> &Vec<Node> {
         &self.nodes
     }

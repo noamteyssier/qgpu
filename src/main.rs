@@ -70,10 +70,17 @@ async fn sub(
             Some(j) => {
 
                 if !dry_run {
+                    println!(
+                        "Submitting:\n>>>Job:\n    {:?}\n>>>Resource:\n    {}",
+                        j, node_pool.print_resource(&r)
+                    );
                     node_pool.run_job(r, j).await;
                 }
                 else {
-                    println!("Will Run \n>>>Job: {:?}\n>>>Resource: {}", j, r);
+                    println!(
+                        "Will Submit:\n>>>Job:\n    {:?}\n>>>Resource:\n    {}",
+                        j, node_pool.print_resource(&r)
+                    );
                     println!();
                 }
             },

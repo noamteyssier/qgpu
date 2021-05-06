@@ -73,6 +73,14 @@ impl Node {
         output
     }
 
+    pub fn print_resource(&self, r: &ResourceIndex) -> String {
+        let gpu = self.gpu_pool.get_gpu(r);
+        let mut output = String::new();
+        output.push_str(&format!("Node Name: {} | ", self.name));
+        output.push_str(&format!("{}", gpu));
+        output
+    }
+
     #[allow (dead_code)]
     pub async fn ls(&self) {
 
