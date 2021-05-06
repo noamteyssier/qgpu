@@ -5,33 +5,68 @@ mod resources;
 mod utils;
 
 use resources::NodePool;
-use utils::{open_sessions, read_node_config, read_job_config};
+use utils::{
+    open_sessions,
+    read_node_config,
+    read_job_config,
+    get_args
+};
 
-#[tokio::main]
-async fn main() {
+async fn stat(
+        node_config_path: &str,
+        usage_free_threshold: usize,
+        memory_free_threshold: usize) {
 
-    let usage_free_threshold = 99;
-    let memory_free_threshold = 99;
 
-    let fn_node_config = "node_pool.json";
-    let fn_job_config = "jobs.json";
+    let node_config = Path::new(node_config_path);
+    let sernodes = read_node_config(node_config);
+    let nodes = open_sessions(sernodes).await;
+    let mut node_pool = NodePool::new(nodes);
 
-    let node_config_path = Path::new(fn_node_config);
-    let job_config_path = Path::new(fn_job_config);
+    node_pool.query_gpus().await;
+    let resources = node_pool.available_gpus(
+        usage_free_threshold, memory_free_threshold
+    ).await;
 
-    let sernodes = read_node_config(node_config_path);
-    let mut jobs = read_job_config(job_config_path);
+    for r in resources {
+        println!("{}", r);
+    }
+
+}
+
+async fn sub(
+        node_config_path: &str,
+        job_config_path: &str,
+        usage_free_threshold: usize,
+        memory_free_threshold: usize,
+        dry_run: bool) {
+
+    let node_config = Path::new(node_config_path);
+    let job_config = Path::new(job_config_path);
+
+
+    let sernodes = read_node_config(node_config);
+    let mut jobs = read_job_config(job_config);
 
     let nodes = open_sessions(sernodes).await;
     let mut node_pool = NodePool::new(nodes);
 
     node_pool.query_gpus().await;
-    let resources = node_pool.available_gpus(usage_free_threshold, memory_free_threshold).await;
+    let resources = node_pool.available_gpus(
+        usage_free_threshold, memory_free_threshold
+    ).await;
 
     for r in resources {
         match jobs.pop_front() {
             Some(j) => {
-                node_pool.run_job(r, j).await;
+
+                if !dry_run {
+                    node_pool.run_job(r, j).await;
+                }
+                else {
+                    println!("Will Run \n>>>Job: {:?}\n>>>Resource: {}", j, r);
+                    println!();
+                }
             },
             None => {
                 break;
@@ -39,5 +74,49 @@ async fn main() {
         };
     }
 
+
+}
+
+
+#[tokio::main]
+async fn main() {
+
+    let matches = get_args();
+
+    match matches.subcommand() {
+        ("stat", Some(sub_m)) => {
+            stat(
+                sub_m.value_of("nodes")
+                    .unwrap(),
+                sub_m.value_of("usage_free_threshold")
+                    .unwrap()
+                    .parse::<usize>()
+                    .expect("Error: Unable to parse free usage sto int"),
+                sub_m.value_of("memory_free_threshold")
+                    .unwrap()
+                    .parse::<usize>()
+                    .expect("Error: Unable to parse free memory to int")
+
+            ).await;
+        },
+        ("sub", Some(sub_m)) => {
+            sub(
+                sub_m.value_of("nodes")
+                    .unwrap(),
+                sub_m.value_of("jobs")
+                    .unwrap(),
+                sub_m.value_of("usage_free_threshold")
+                    .unwrap()
+                    .parse::<usize>()
+                    .expect("Error: Unable to parse free usage sto int"),
+                sub_m.value_of("memory_free_threshold")
+                    .unwrap()
+                    .parse::<usize>()
+                    .expect("Error: Unable to parse free memory to int"),
+                sub_m.is_present("dry")
+            ).await;
+        }
+        _ => unreachable!()
+    };
 
 }

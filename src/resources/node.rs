@@ -92,7 +92,7 @@ impl Node {
     pub async fn run_job(&self, r: &ResourceIndex, j: Job) {
         println!("starting job on resource: {}", r);
 
-        let sub_job = self.session
+        self.session
             .command("bash")
             .arg("-c")
             .arg(j.build_command(r, self.get_env()))
