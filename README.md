@@ -46,30 +46,40 @@ Config Notes :
 Describes the configuration of the jobs you'd like to submit across the node pool
 
 Recognizes fields:
+
     - command
+
     - args
+
     - relative_path
+
     - env
+
     - n_submission
 
 Config Notes :
+
     - command
         - command to use to start the job
             - if you are submitting a bash script use "bash"
             - if you are submitting a python script use "python"
             - can also pass multiple values : "bash <script>.sh"
+
     - args
         - optional configuration
         - list of arguments to provide to command
+
 
     - relative_path
         - Optional configuration
         - the relative path from $HOME where you'd like the command to be run
         - under the hood will `cd <path>`
+
     - env
         - Optional configuration
         - name of cuda environment to start for job
         - takes priority over node envrionment if both are provided
+
     - n_submission
         - Optional configuration
         - number of times to submit this job
@@ -96,11 +106,14 @@ qgpu queries which resources are available given free memory/usage thresholds an
 
 The way for you to use this is through accessing those environment variables in the same way you would with any job scheduler.
 
-qgpu uses these environment variables:
+qgpu uses these environment variables :
+
     - QG_NODE_ID
         - the zero_indexed node_id across the node pool
+
     - QG_GPU_ID
         - the zero indexed gpu_id within a given node
+
     - QG_LOG_PATH
         - a path to write stdout
         - node<QG_NODE_ID>_gpu<QG_GPU_ID>.log.txt
