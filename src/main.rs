@@ -33,14 +33,6 @@ async fn stat(
         )
     }
 
-    // let resources = node_pool.available_gpus(
-    //     usage_free_threshold, memory_free_threshold
-    // ).await;
-
-    // for r in resources {
-    //     println!("{}", node_pool.get_node(&r));
-    // }
-
 }
 
 async fn sub(
