@@ -2,40 +2,47 @@
 #[derive (Debug)]
 pub struct GPU {
     id: usize,
-    mem_total: usize,
-    mem_used: usize,
-    mem_free: usize,
-    fraction_free: f64,
-    fraction_used: f64
+    gpu_usage: usize,
+    gpu_memory: usize,
+    fraction_usage_free: usize,
+    fraction_memory_free: usize,
 }
 
 impl GPU {
 
-    pub fn new(
-        id: usize,
-        mem_total: usize,
-        mem_used: usize,
-        mem_free: usize) -> Self {
+    pub fn new(id: usize, gpu_usage: usize, gpu_memory: usize) -> Self {
 
-        let fraction_free = (mem_free as f64) / (mem_total as f64);
-        let fraction_used = (mem_used as f64) / (mem_total as f64);
+        let fraction_usage_free = 100 - gpu_usage;
+        let fraction_memory_free = 100 - gpu_memory;
 
         GPU {
             id,
-            mem_total,
-            mem_used,
-            mem_free,
-            fraction_free,
-            fraction_used
+            gpu_usage,
+            gpu_memory,
+            fraction_usage_free,
+            fraction_memory_free
         }
     }
 
-    pub fn get_fraction_free(&self) -> f64 {
-        self.fraction_free
+    pub fn get_usage_free(&self) -> usize {
+        self.fraction_usage_free
+    }
+
+    pub fn get_memory_free(&self) -> usize {
+        self.fraction_memory_free
     }
 
     pub fn get_index(&self) -> usize {
         self.id
+    }
+
+    pub fn is_available(&self,
+        usage_free_threshold: usize,
+        memory_free_threshold: usize) -> bool {
+
+        (self.get_usage_free() >= usage_free_threshold) &
+            (self.get_memory_free() >= memory_free_threshold)
+
     }
 
 }

@@ -17,7 +17,7 @@ impl GPUPool {
         self.pool.push(gpu)
     }
 
-    pub fn parse_memory(line: &str) -> usize {
+    pub fn parse_value(line: &str) -> usize {
 
         line.split_whitespace().nth(2)
             .expect("Error: Could not index to expected memory usage")
@@ -33,19 +33,17 @@ impl GPUPool {
 
         while let Some(line) = lines.next() {
 
-            if line.contains("FB Memory Usage") {
+            if line.trim() == "Utilization" {
 
-                let mem_total = GPUPool::parse_memory(
-                    lines.next().expect("Error: Unexpected End of SMI (TOTAL)")
+                let gpu_usage = GPUPool::parse_value(
+                    lines.next().expect("Error: Unexpected End of SMI (GPU USAGE)")
                 );
-                let mem_used = GPUPool::parse_memory(
-                    lines.next().expect("Error: Unexpected End of SMI (USED)")
-                );
-                let mem_free = GPUPool::parse_memory(
-                    lines.next().expect("Error: Unexpected End of SMI (FREE)")
+                let gpu_memory = GPUPool::parse_value(
+                    lines.next().expect("Error: Unexpected End of SMI (GPU USAGE)")
                 );
 
-                let gpu = GPU::new(gpu_index, mem_total, mem_used, mem_free);
+
+                let gpu = GPU::new(gpu_index, gpu_usage, gpu_memory);
 
                 self.add_gpu(gpu);
                 gpu_index += 1;
@@ -54,9 +52,13 @@ impl GPUPool {
 
     }
 
-    pub fn available_gpus(&self, free_threshold: f64) -> Vec<usize> {
+    pub fn available_gpus(&self,
+            usage_free_threshold: usize,
+            memory_free_threshold: usize
+            ) -> Vec<usize> {
+
         self.pool.iter()
-            .filter(|g| g.get_fraction_free() >= free_threshold)
+            .filter(|g| g.is_available(usage_free_threshold, memory_free_threshold))
             .map(|g| g.get_index())
             .collect()
     }

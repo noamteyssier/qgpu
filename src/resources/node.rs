@@ -64,7 +64,7 @@ impl Node {
         let query_gpu_mem = self.session
             .command("bash")
             .arg("-c")
-            .arg("nvidia-smi -q -d MEMORY")
+            .arg("nvidia-smi -q -d UTILIZATION")
             .output()
             .await
             .expect("Error: Could not query memory");
@@ -75,8 +75,11 @@ impl Node {
         self.gpu_pool.from_smi(&query_output);
     }
 
-    pub async fn available_gpus(&self, free_threshold: f64) -> Vec<ResourceIndex> {
-        self.gpu_pool.available_gpus(free_threshold)
+    pub async fn available_gpus(&self,
+            usage_free_threshold: usize,
+            memory_free_threshold: usize) -> Vec<ResourceIndex> {
+
+        self.gpu_pool.available_gpus(usage_free_threshold, memory_free_threshold)
             .iter()
             .map(|gpu_index|
                 ResourceIndex::new(self.get_index(), *gpu_index)

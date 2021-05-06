@@ -40,12 +40,15 @@ impl NodePool {
         join_all(v).await;
     }
 
-    pub async fn available_gpus(&self, free_threshold: f64) -> Vec<ResourceIndex> {
+    pub async fn available_gpus(&self,
+        usage_free_threshold: usize,
+        memory_free_threshold: usize) -> Vec<ResourceIndex> {
+
         let mut v = Vec::new();
 
         // prepare query available gpus passing free fraction threshold
         for n in self.nodes.iter() {
-            v.push(n.available_gpus(free_threshold))
+            v.push(n.available_gpus(usage_free_threshold, memory_free_threshold))
         }
 
         // perform parallel query
