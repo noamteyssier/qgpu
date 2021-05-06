@@ -84,6 +84,7 @@ async fn main() {
     let matches = get_args();
 
     match matches.subcommand() {
+
         ("stat", Some(sub_m)) => {
             stat(
                 sub_m.value_of("nodes")
@@ -99,6 +100,7 @@ async fn main() {
 
             ).await;
         },
+
         ("sub", Some(sub_m)) => {
             sub(
                 sub_m.value_of("nodes")
@@ -116,7 +118,9 @@ async fn main() {
                 sub_m.is_present("dry")
             ).await;
         }
+
         _ => unreachable!()
+
     };
 
 }
