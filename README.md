@@ -15,17 +15,17 @@ cargo build --release && cargo install --path .
 Describes the json configuration of the nodes you'd like to queue to.
 
 Recognizes fields:
-    - name
-    - env
+    -name
+    -env
 
 Config Notes :
-    - name
-        - name to node as specified in your ~/.ssh/config file
-        - requires that passwordless ssh is setup
-        - requires that proxyjumps are set up
-    - env
-        - Optional configuration
-        - name of cuda environment to start on the node
+    -name
+        -name to node as specified in your ~/.ssh/config file
+        -requires that passwordless ssh is setup
+        -requires that proxyjumps are set up
+    -env
+        -Optional configuration
+        -name of cuda environment to start on the node
 
 ### Example JSON
 ```{json}
