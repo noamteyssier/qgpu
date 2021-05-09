@@ -80,7 +80,7 @@ impl Node {
     }
 
     pub fn print_resource(&self, r: &ResourceIndex) -> String {
-        let gpu = self.gpu_pool.get_gpu(r);
+        let gpu = self.get_gpu(r);
         let mut output = String::new();
         output.push_str(&format!("Node Name: {} | ", self.name));
         output.push_str(&format!("{}", gpu));
