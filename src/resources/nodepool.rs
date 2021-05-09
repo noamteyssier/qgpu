@@ -1,7 +1,7 @@
 
 use futures::future::join_all;
 
-use super::{Node, ResourceIndex, Job};
+use super::{Node, GPU, ResourceIndex, Job};
 
 pub struct NodePool {
     nodes: Vec<Node>
@@ -15,6 +15,10 @@ impl NodePool {
 
     pub fn get_node(&self, r: &ResourceIndex) -> &Node {
         &self.nodes[r.get_node_id()]
+    }
+
+    pub fn get_gpu(&self, r: &ResourceIndex) -> &GPU {
+        self.get_node(r).get_gpu(r)
     }
 
     pub fn print_resource(&self, r: &ResourceIndex) -> String {
@@ -68,7 +72,7 @@ impl NodePool {
             .flatten()
             .collect::<Vec<ResourceIndex>>();
 
-        all_resources.sort_by_key(|k| k.get_gpu_id());
+        all_resources.sort_by_key(|k| k.get_free_memory(&self));
 
         all_resources
 

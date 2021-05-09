@@ -1,5 +1,6 @@
 
 use std::fmt;
+use super::NodePool;
 
 #[derive (Debug, Ord, PartialOrd, PartialEq, Eq)]
 pub struct ResourceIndex {
@@ -24,5 +25,9 @@ impl ResourceIndex {
 
     pub fn get_gpu_id(&self) -> usize {
         self.gpu_id
+    }
+
+    pub fn get_free_memory(&self, n: &NodePool) -> usize {
+        n.get_gpu(&self).get_memory_free()
     }
 }

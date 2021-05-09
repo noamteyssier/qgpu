@@ -1,7 +1,7 @@
 
 use std::fmt;
 use openssh::Session;
-use super::{GPUPool, ResourceIndex, Job};
+use super::{GPU, GPUPool, ResourceIndex, Job};
 
 
 #[derive (Debug)]
@@ -54,6 +54,10 @@ impl Node {
 
     pub fn get_env(&self) -> &Option<String> {
         &self.env
+    }
+
+    pub fn get_gpu(&self, r: &ResourceIndex) -> &GPU {
+        self.gpu_pool.get_gpu(r)
     }
 
     pub fn get_format_print(&self,
