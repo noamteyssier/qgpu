@@ -51,26 +51,30 @@ pub async fn open_sessions(sernodes: Vec<SerNode>) -> Vec<Node> {
 }
 
 pub fn read_node_config(path: &Path) -> Vec<SerNode> {
-    let file = File::open(path).expect("Error: Could not open Node Config File");
+    let file = File::open(path)
+        .expect("Error: Could not open Node Config File");
     let reader = BufReader::new(file);
 
     let deserializer = serde_json::Deserializer::from_reader(reader);
-
     deserializer.into_iter::<SerNode>()
-        .map(|x| x.expect("Error: Could not parase Node"))
+        .map(|x| x.expect(
+            "Error: Could not parse Node Config JSON (Malformed)")
+        )
         .collect()
 
 }
 
 pub fn read_job_config(path: &Path) -> VecDeque<Job> {
 
-    let file = File::open(path).expect("Error: Could not open Node Config File");
+    let file = File::open(path)
+        .expect("Error: Could not open Job Config File");
     let reader = BufReader::new(file);
 
     let deserializer = serde_json::Deserializer::from_reader(reader);
-
     deserializer.into_iter::<Job>()
-        .map(|x| x.expect("Error: Could not parase Node"))
+        .map(|x| x.expect(
+            "Error: Could not parse Job Config JSON (Malformed)")
+        )
         .collect()
 
 }
