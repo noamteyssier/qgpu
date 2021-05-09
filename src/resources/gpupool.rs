@@ -25,37 +25,34 @@ impl GPUPool {
         &self.pool
     }
 
-    pub fn parse_value(line: &str) -> usize {
-
-        line.split_whitespace().nth(2)
-            .expect("Error: Could not index to expected memory usage")
-            .parse::<usize>()
-            .expect("Error: Could not parse memory usage to usize")
-
-    }
-
     pub fn from_smi(&mut self, nvidia_smi: &str) {
 
         let mut lines = nvidia_smi.lines();
-        let mut gpu_index = 0;
+        while let Some(gpu_line) = lines.next() {
 
-        while let Some(line) = lines.next() {
+            let gpu_query: Vec<&str> = gpu_line.split(",")
+                .map(|x| x.trim())
+                .collect();
 
-            if line.trim() == "Utilization" {
+            let name = gpu_query[0].to_owned();
+            let id = gpu_query[1].parse::<usize>()
+                .expect("Error: Could not parse id to int");
+            let util_gpu = gpu_query[2].parse::<usize>()
+                .expect("Error: Could not parse gpu_usage to int");
+            let util_mem = gpu_query[3].parse::<usize>()
+                .expect("Error: Could not parse mem_usage to int");
+            let mem_total = gpu_query[4].parse::<usize>()
+                .expect("Error: Could not parse mem_total to int");
+            let mem_free = gpu_query[5].parse::<usize>()
+                .expect("Error: Could not parse mem_total to int");
+            let mem_used = gpu_query[6].parse::<usize>()
+                .expect("Error: Could not parse mem_total to int");
 
-                let gpu_usage = GPUPool::parse_value(
-                    lines.next().expect("Error: Unexpected End of SMI (GPU USAGE)")
-                );
-                let gpu_memory = GPUPool::parse_value(
-                    lines.next().expect("Error: Unexpected End of SMI (GPU USAGE)")
-                );
+            let gpu = GPU::new(
+                name, id, util_gpu, util_mem, mem_total, mem_free, mem_used
+            );
 
-
-                let gpu = GPU::new(gpu_index, gpu_usage, gpu_memory);
-
-                self.add_gpu(gpu);
-                gpu_index += 1;
-            }
+            self.add_gpu(gpu);
         }
 
     }

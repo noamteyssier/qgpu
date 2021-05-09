@@ -4,9 +4,13 @@ use colored::*;
 
 #[derive (Debug)]
 pub struct GPU {
+    name: String,
     id: usize,
-    gpu_usage: usize,
-    gpu_memory: usize,
+    util_gpu: usize,
+    util_mem: usize,
+    mem_total: usize,
+    mem_free: usize,
+    mem_used:usize,
     fraction_usage_free: usize,
     fraction_memory_free: usize,
 }
@@ -24,15 +28,31 @@ impl fmt::Display for GPU {
 
 impl GPU {
 
-    pub fn new(id: usize, gpu_usage: usize, gpu_memory: usize) -> Self {
+    pub fn new(
+            name: String,
+            id: usize,
+            util_gpu: usize,
+            util_mem: usize,
+            mem_total: usize,
+            mem_free: usize,
+            mem_used: usize
+            ) -> Self {
 
-        let fraction_usage_free = 100 - gpu_usage;
-        let fraction_memory_free = 100 - gpu_memory;
+
+        let fraction_usage_free = 100 - util_gpu;
+        let fraction_memory_free = (
+            100.0 * (mem_free as f64 / mem_total as f64)
+        ).round() as usize;
+
 
         GPU {
+            name,
             id,
-            gpu_usage,
-            gpu_memory,
+            util_gpu,
+            util_mem,
+            mem_total,
+            mem_free,
+            mem_used,
             fraction_usage_free,
             fraction_memory_free
         }
@@ -60,8 +80,9 @@ impl GPU {
         );
 
         let s = format!(
-            "GPU_{}: usage_free: {}, memory_free: {}, available: {}",
+            "GPU_{}: name: {}, usage_free: {}, memory_free: {}, available: {}",
             self.id,
+            self.name,
             self.fraction_usage_free,
             self.fraction_memory_free,
             available

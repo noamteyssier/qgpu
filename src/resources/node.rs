@@ -106,10 +106,10 @@ impl Node {
         let query_gpu_mem = self.session
             .command("bash")
             .arg("-c")
-            .arg("nvidia-smi -q -d UTILIZATION")
+            .arg("nvidia-smi --query-gpu=gpu_name,index,utilization.gpu,utilization.memory,memory.total,memory.free,memory.used --format=csv,noheader,nounits")
             .output()
             .await
-            .expect("Error: Could not query memory");
+            .expect("Error: Could not perform query");
 
         let query_output = String::from_utf8(query_gpu_mem.stdout)
             .expect("Error: could not convert query to UTF-8");
