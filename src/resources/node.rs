@@ -64,7 +64,9 @@ impl Node {
         let mut output = String::new();
         output.push_str(&format!("Node Name: {}", self.name));
         for g in self.gpu_pool.get_gpus() {
-            let gpu_output = g.get_format_print(usage_free_threshold, memory_free_threshold);
+            let gpu_output = g.get_format_print(
+                usage_free_threshold, memory_free_threshold
+            );
             output.push_str(
                 &format!("\n >> {}", gpu_output)
             );
