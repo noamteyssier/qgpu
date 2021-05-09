@@ -1,5 +1,6 @@
 
 use std::fmt;
+use colored::*;
 
 #[derive (Debug)]
 pub struct GPU {
@@ -51,15 +52,26 @@ impl GPU {
 
     pub fn get_format_print(&self,
         usage_free_threshold: usize,
-        memory_free_threshold: usize) -> String {
+        memory_free_threshold: usize) -> ColoredString {
 
-        format!(
+        let available = self.is_available(
+            usage_free_threshold,
+            memory_free_threshold
+        );
+
+        let s = format!(
             "GPU_{}: usage_free: {}, memory_free: {}, available: {}",
             self.id,
             self.fraction_usage_free,
             self.fraction_memory_free,
-            self.is_available(usage_free_threshold, memory_free_threshold)
-        )
+            available
+        );
+
+        match available {
+            true => s.blue(),
+            false => s.red()
+        }
+
     }
 
     pub fn is_available(&self,
