@@ -1,7 +1,7 @@
 
 use std::fmt;
 use openssh::Session;
-use super::{GPUPool, ResourceIndex, Job};
+use super::{GPU, GPUPool, ResourceIndex, Job};
 
 
 #[derive (Debug)]
@@ -56,6 +56,10 @@ impl Node {
         &self.env
     }
 
+    pub fn get_gpu(&self, r: &ResourceIndex) -> &GPU {
+        self.gpu_pool.get_gpu(r)
+    }
+
     pub fn get_format_print(&self,
         usage_free_threshold: usize,
         memory_free_threshold: usize) -> String {
@@ -76,7 +80,7 @@ impl Node {
     }
 
     pub fn print_resource(&self, r: &ResourceIndex) -> String {
-        let gpu = self.gpu_pool.get_gpu(r);
+        let gpu = self.get_gpu(r);
         let mut output = String::new();
         output.push_str(&format!("Node Name: {} | ", self.name));
         output.push_str(&format!("{}", gpu));
@@ -106,10 +110,10 @@ impl Node {
         let query_gpu_mem = self.session
             .command("bash")
             .arg("-c")
-            .arg("nvidia-smi -q -d UTILIZATION")
+            .arg("nvidia-smi --query-gpu=gpu_name,index,utilization.gpu,utilization.memory,memory.total,memory.free,memory.used --format=csv,noheader,nounits")
             .output()
             .await
-            .expect("Error: Could not query memory");
+            .expect("Error: Could not perform query");
 
         let query_output = String::from_utf8(query_gpu_mem.stdout)
             .expect("Error: could not convert query to UTF-8");
