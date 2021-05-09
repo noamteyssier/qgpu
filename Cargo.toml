@@ -1,6 +1,6 @@
 [package]
 name = "qgpu"
-version = "0.1.0"
+version = "0.2.0"
 authors = ["noamteyssier <nb.teyssier@gmail.com>"]
 edition = "2018"
 
@@ -9,6 +9,7 @@ edition = "2018"
 [dependencies]
 tokio = { version = "1", features = ["full"] }
 serde = { version = "1.0", features = ["derive"] }
+shellexpand = "1"
 serde_json = "1.0"
 openssh = "0.8"
 futures = "0.3"
