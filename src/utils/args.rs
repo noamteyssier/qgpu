@@ -1,12 +1,34 @@
 
-extern crate clap;
+use std::path::Path;
+use shellexpand::tilde;
 use clap::{
     Arg, App, SubCommand, AppSettings, ArgMatches
 };
 
+
+pub fn default_node_exists(matches: &ArgMatches) {
+
+    let node_path = matches.value_of("nodes").unwrap();
+
+    // check if default is given
+    if node_path.eq("~/.qgpu_node_config.json") {
+
+        // check if default exists in file system
+        let node_path = tilde(node_path).into_owned();
+        let path = Path::new(&node_path);
+
+        // quits if missing
+        if !path.exists() {
+            println!("Error: Requires node config to be given if default ~/.qgpu_node_config.json is missing");
+            std::process::exit(-1);
+        }
+    }
+
+}
+
 pub fn get_args() -> ArgMatches<'static> {
 
-    let matches = App::new("qgpu")
+    let app = App::new("qgpu")
                     .version("0.1")
                     .author("Noam Teyssier <nb.teyssier@gmail.com>")
                     .about("A simple job scheduler with respect to gpu usage across multiple nodes")
@@ -18,7 +40,8 @@ pub fn get_args() -> ArgMatches<'static> {
                                     .short("i")
                                     .long("node_config")
                                     .takes_value(true)
-                                    .required(true)
+                                    .required(false)
+                                    .default_value("~/.qgpu_node_config.json")
                                     .help("node config file (json formatted)"))
                             .arg(Arg::with_name("usage_free_threshold")
                                 .short("f")
@@ -42,7 +65,8 @@ pub fn get_args() -> ArgMatches<'static> {
                                      .short("i")
                                      .long("node_config")
                                      .takes_value(true)
-                                     .required(true)
+                                     .required(false)
+                                     .default_value("~/.qgpu_node_config.json")
                                      .help("node config file (json formatted)"))
                                  .arg(Arg::with_name("jobs")
                                      .short("j")
@@ -70,7 +94,18 @@ pub fn get_args() -> ArgMatches<'static> {
                                      .required(false)
                                      .default_value("95")
                                      .help("free memory % required to consider a resource available (default = 95)"))
-                          )
-                    .get_matches();
+                          );
+
+    let matches = app.get_matches();
+
+    // exits if default_node_config missing
+    match matches.subcommand() {
+
+        ("stat", Some(sub_m)) => default_node_exists(sub_m),
+        ("sub", Some(sub_m)) => default_node_exists(sub_m),
+        _ => unreachable!()
+
+    };
+
     matches
 }

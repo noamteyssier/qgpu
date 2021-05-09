@@ -1,8 +1,8 @@
 
-use std::path::Path;
 use std::fs::File;
 use std::io::BufReader;
 use std::collections::VecDeque;
+use shellexpand::tilde;
 
 use crate::resources::{Node, SerNode, Job};
 use openssh::Session;
@@ -50,7 +50,8 @@ pub async fn open_sessions(sernodes: Vec<SerNode>) -> Vec<Node> {
     nodes
 }
 
-pub fn read_node_config(path: &Path) -> Vec<SerNode> {
+pub fn read_node_config(path: &str) -> Vec<SerNode> {
+    let path = tilde(path).into_owned();
     let file = File::open(path)
         .expect("Error: Could not open Node Config File");
     let reader = BufReader::new(file);
@@ -64,8 +65,8 @@ pub fn read_node_config(path: &Path) -> Vec<SerNode> {
 
 }
 
-pub fn read_job_config(path: &Path) -> VecDeque<Job> {
-
+pub fn read_job_config(path: &str) -> VecDeque<Job> {
+    let path = tilde(path).into_owned();
     let file = File::open(path)
         .expect("Error: Could not open Job Config File");
     let reader = BufReader::new(file);

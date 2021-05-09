@@ -1,6 +1,4 @@
 
-use std::path::Path;
-
 mod resources;
 mod utils;
 
@@ -17,9 +15,7 @@ async fn stat(
         usage_free_threshold: usize,
         memory_free_threshold: usize) {
 
-
-    let node_config = Path::new(node_config_path);
-    let sernodes = read_node_config(node_config);
+    let sernodes = read_node_config(node_config_path);
     let nodes = open_sessions(sernodes).await;
     let mut node_pool = NodePool::new(nodes);
 
@@ -42,12 +38,8 @@ async fn sub(
         memory_free_threshold: usize,
         dry_run: bool) {
 
-    let node_config = Path::new(node_config_path);
-    let job_config = Path::new(job_config_path);
-
-
-    let sernodes = read_node_config(node_config);
-    let mut jobs = read_job_config(job_config);
+    let sernodes = read_node_config(node_config_path);
+    let mut jobs = read_job_config(job_config_path);
 
     let nodes = open_sessions(sernodes).await;
     let mut node_pool = NodePool::new(nodes);
