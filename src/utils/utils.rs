@@ -7,8 +7,6 @@ use std::collections::VecDeque;
 use crate::resources::{Node, SerNode, Job};
 use openssh::Session;
 use futures::future::join_all;
-use anyhow::{Context, Result};
-
 
 async fn _open_session(sernodes: &Vec<SerNode>) -> Vec<Result<Session, openssh::Error>>{
 
