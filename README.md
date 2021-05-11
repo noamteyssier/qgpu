@@ -13,6 +13,7 @@ cargo build --release && cargo install --path .
 
 ## Node Pool
 Describes the json configuration of the nodes you'd like to queue to.
+can be given as a `-i <node_pool>.json` or will read from `~/.qgpu_node_config.json` if path exists
 
 ### Recognized Fields:
 * name
@@ -45,25 +46,23 @@ Describes the configuration of the jobs you'd like to submit across the node poo
 ### Recognized Fields:
 
 * command
-  * command to use to start the job
-  * if you are submitting a bash script use "bash"
-  * if you are submitting a python script use "python"
-  * can also pass multiple values : "bash <script>.sh"
+  * command to use to start the job (must be recognized by shell environment)
+  * if you are submitting a bash script use `"bash"`
+  * if you are submitting a python script use `"python"`
 
 * args
   * optional configuration
   * list of arguments to provide to command
 
-
 * relative_path
   * Optional configuration
-  * the relative path from $HOME where you'd like the command to be run
+  * the relative path from `$HOME` where you'd like the command to be run
   * under the hood will `cd <path>`
 
 * env
   * Optional configuration
   * name of cuda environment to start for job
-  * takes priority over node envrionment if both are provided
+  * takes priority over node environment if both are provided
 
 * n_submission
   * Optional configuration
@@ -93,15 +92,16 @@ The way for you to use this is through accessing those environment variables in 
 
 qgpu uses these environment variables :
 
-* QG_NODE_ID
-  * the zero_indexed node_id across the node pool
+* `QG_NODE_ID`
+  * the zero_indexed `node_id` across the node pool
 
-* QG_GPU_ID
-  * the zero indexed gpu_id within a given node
+* `QG_GPU_ID`
+  * the zero indexed `gpu_id` within a given node
 
-* QG_LOG_PATH
-  * a path to write stdout
-  * node<QG_NODE_ID>_gpu<QG_GPU_ID>.log.txt
+* `QG_LOG_PATH`
+  * a path to redirect stdout/stderr to.
+  * protip : `your_script.sh |& tee output.lxt` will redirect both stdout and stderr
+  * format of log path: `node<QG_NODE_ID>_gpu<QG_GPU_ID>.log.txt`
 
 
 ## Example Script
@@ -120,7 +120,7 @@ python3 my_machine_learning_run.py \
     -n 12 \
     -g ${QG_GPU_ID} \
     -M 100 \
-    -t 25 > ${QG_LOG_PATH}
+    -t 25 |& tee ${QG_LOG_PATH}
 ```
 
 ## Querying Usage and Submitting
@@ -135,9 +135,16 @@ qgpu stat --help
 qgpu sub --help
 
 # query the usage statistics on the node pool
+# expects ~/.qgpu_node_config.json to exist
+qgpu stat
+
+# query the usage statistics on the node pool with custom node_pool
 qgpu stat -i node_pool.json
 
 # submit a pool of jobs across the available nodes on a node pool
+qgpu sub -j jobs.json
+
+# submit a pool of jobs across a custom node_pool
 qgpu sub -i node_pool.json -j jobs.json
 
 # submit with very stringent resource availability
